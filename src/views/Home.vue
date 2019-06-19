@@ -99,7 +99,7 @@ export default {
 
   methods: {
     addItem (item) {
-      axios.post('http://my-json-server.typicode.com/lgould12/requestForm/supplies/',
+      axios.post('https://my-json-server.typicode.com/lgould12/requestForm/supplies/',
         { id: uuid.v4(),
           item: item,
           category: this.currCategory })
@@ -122,7 +122,7 @@ export default {
           }
         }
         this.reqId++
-        axios.post('http://my-json-server.typicode.com/lgould12/requestForm/requests/',
+        axios.post('https://my-json-server.typicode.com/lgould12/requestForm/requests/',
           {
             id: uuid.v4(),
             locale: this.$refs.locator.location,
@@ -156,13 +156,13 @@ export default {
     }
   },
   created () {
-    axios.get('http://my-json-server.typicode.com/lgould12/requestForm/supplies/')
+    axios.get('https://my-json-server.typicode.com/lgould12/requestForm/supplies/')
       .then(res => { this.supplyList = res.data })
       .catch(err => console.log(err))
-    axios.get('http://my-json-server.typicode.com/lgould12/requestForm/requests/')
+    axios.get('https://my-json-server.typicode.com/lgould12/requestForm/requests/')
       .then(res => { this.allRequests = res.data })
       .catch(err => console.log(err))
-    axios.get('http://my-json-server.typicode.com/lgould12/requestForm/password/')
+    axios.get('https://my-json-server.typicode.com/lgould12/requestForm/password/')
       .then(res => { this.corrPass = res.data })
       .catch(err => console.log(err))
   }
