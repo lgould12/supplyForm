@@ -5,10 +5,10 @@
         <div data-v-ccc41290="" class="navbar-brand brand-logo">
           <img data-v-ccc41290="" src="//cdn.shopify.com/s/files/1/1757/1461/files/HZ-no-city-digital-black.png?10146406607426040436" alt="The Rush Market" width="250" class="">
         </div>
+        <input class="form-control" type="text" v-model="email" placeholder="Email" >
         <input class="form-control" type="password" v-model="password" placeholder="Password" >
         <button @click="authenticate" class="btn btn-default">Log In</button>
         <button @click="logout" class="btn btn-default">Log Out</button>
-
       </div>
     </nav>
     <body class="app header-fixed">
@@ -55,18 +55,14 @@ import axios from 'axios'
 import Category from '../components/Category.vue'
 // import Login from '../components/Login.vue'
 import uuid from 'uuid'
+import {db} from '../firebase'
+import {login} from '../firebase'
 
 export default {
   name: 'Home',
   data () {
     return {
-      supplyList: [
-        {
-          id: 1,
-          item: 'Post It Notes(Square)',
-          category: 'Office Supplies'
-        }
-      ],
+      supplyList: [],
       recordedList: [],
       request: {
         id: 0,
@@ -82,7 +78,8 @@ export default {
       currCategory: 'Office Supplies',
       admin: false,
       password: '',
-      corrPass: ''
+      corrPass: '',
+      email: ''
     }
   },
 
@@ -99,12 +96,10 @@ export default {
 
   methods: {
     addItem (item) {
-      axios.post('https://my-json-server.typicode.com/lgould12/supplyForm/supplies/',
-        { id: uuid.v4(),
+      db.collection('supplies').add({
           item: item,
-          category: this.currCategory })
-        .then(res => { this.supplyList = [...this.supplyList, res.data] })
-        .catch(err => console.log(err))
+          category: this.currCategory 
+      })
     },
     changeCat (category) {
       this.currCategory = category
@@ -122,46 +117,59 @@ export default {
           }
         }
         this.reqId++
-        axios.post('https://my-json-server.typicode.com/lgould12/supplyForm/requests/',
-          {
-            id: uuid.v4(),
+        db.collection('requests').add({
             locale: this.$refs.locator.location,
             supplies: this.recordedList,
             date: new Date().toLocaleString()
-          })
-          .then(res => { this.allRequests = [...this.allRequests, res.data] })
-          .catch(err => console.log(err))
+        })
       }
     },
     deleteRequest (id) {
-      if (this.admin) {
+      var user = login.currentUser
+      if (user) {
+        db.collection('requests').doc(id).delete()
         this.allRequests = this.allRequests.filter(request => request.id !== id)
-        /* axios.delete(`http://my-json-server.typicode.com/DigitalTaco/supplyForm/requests/${id}`)
-              .then(res=>this.allRequests = this.allRequests.filter(request => request.id !== id))
-              .catch(err => console.log(err));
-            */
       } else {
         this.delError = true
       }
     },
     authenticate () {
-      if (this.password === this.corrPass[0].pass) {
-        this.admin = true
-      }
-      this.delError = false
-      this.password = ''
+      login.signInWithEmailAndPassword(this.email, this.password).catch(function(error) {
+        console.log(error.code)
+        console.log(error.message)
+      })
+      this.email = ""
+      this.password = ""
     },
     logout () {
-      this.admin = false
+      login.signOut()
     }
   },
   created () {
-    axios.get('https://my-json-server.typicode.com/lgould12/supplyForm/supplies/')
-      .then(res => { this.supplyList = res.data })
-      .catch(err => console.log(err))
-    axios.get('https://my-json-server.typicode.com/lgould12/supplyForm/requests/')
-      .then(res => { this.allRequests = res.data })
-      .catch(err => console.log(err))
+    db.collection('supplies').onSnapshot(querySnapshot => 
+    {
+      this.supplyList = [],
+      querySnapshot.forEach(doc => {
+        const data = {
+          'id': doc.id,
+          'item': doc.data().item,
+          'category': doc.data().category
+        }
+        this.supplyList.push(data)
+      })
+    })
+    db.collection('requests').onSnapshot(querySnapshot => {
+      this.allRequests = [],
+      querySnapshot.forEach(doc => {
+        const data = {
+          'id': doc.id,
+          'date': doc.data().date,
+          'locale': doc.data().locale,
+          'supplies': doc.data().supplies
+        }
+        this.allRequests.push(data)
+      })
+    })
     axios.get('https://my-json-server.typicode.com/lgould12/supplyForm/password/')
       .then(res => { this.corrPass = res.data })
       .catch(err => console.log(err))
