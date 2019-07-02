@@ -5,10 +5,13 @@
         <div data-v-ccc41290="" class="navbar-brand brand-logo">
           <img data-v-ccc41290="" src="//cdn.shopify.com/s/files/1/1757/1461/files/HZ-no-city-digital-black.png?10146406607426040436" alt="The Rush Market" width="250" class="">
         </div>
-        <input class="form-control" type="text" v-model="email" placeholder="Email" >
-        <input class="form-control" type="password" v-model="password" placeholder="Password" >
-        <button @click="authenticate" class="btn btn-default">Log In</button>
-        <button @click="logout" class="btn btn-default">Log Out</button>
+        <input class="form-control" type="text" v-model="email" placeholder="Email" style="margin: 3px">
+        <input class="form-control" type="password" v-model="password" placeholder="Password" style="margin: 3px">
+        <button @click="authenticate" class="btn btn-dark" style="margin: 3px">Log In</button>
+        <button @click="logout" class="btn btn-dark" style="margin: 3px">Log Out</button>
+        <div class="alert alert-info" role="alert" v-if="this.loggedIn"  style="margin: 3px">Currently logged in as: {{this.currUser}}</div>
+        <div class="alert alert-info" role="alert" v-if="!this.loggedIn"  style="margin: 3px">Not Logged In</div>
+        <div class="alert alert-danger" role="alert" v-if="loginMsg !== ''"  style="margin: 3px">{{this.loginMsg}}</div>
       </div>
     </nav>
     <body class="app header-fixed">
@@ -79,7 +82,10 @@ export default {
       admin: false,
       password: '',
       corrPass: '',
-      email: ''
+      email: '',
+      currUser: '',
+      loggedIn: false,
+      loginMsg: ''
     }
   },
 
@@ -136,17 +142,20 @@ export default {
     authenticate () {
       login.signInWithEmailAndPassword(this.email, this.password).catch(function(error) {
         console.log(error.code)
-        console.log(error.message)
+        alert(error.message)
       })
       this.email = ""
       this.password = ""
+      this.currUser = login.currentUser.email
+      this.loggedIn = true
     },
     logout () {
       login.signOut()
+      this.loggedIn  = false
     }
   },
   created () {
-    db.collection('supplies').onSnapshot(querySnapshot => 
+    db.collection('supplies').orderBy("item").onSnapshot(querySnapshot => 
     {
       this.supplyList = [],
       querySnapshot.forEach(doc => {
@@ -158,7 +167,7 @@ export default {
         this.supplyList.push(data)
       })
     })
-    db.collection('requests').onSnapshot(querySnapshot => {
+    db.collection('requests').orderBy("locale").onSnapshot(querySnapshot => {
       this.allRequests = [],
       querySnapshot.forEach(doc => {
         const data = {
@@ -170,9 +179,6 @@ export default {
         this.allRequests.push(data)
       })
     })
-    axios.get('https://my-json-server.typicode.com/lgould12/supplyForm/password/')
-      .then(res => { this.corrPass = res.data })
-      .catch(err => console.log(err))
   }
 }
 </script>
