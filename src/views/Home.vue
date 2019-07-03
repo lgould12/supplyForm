@@ -36,7 +36,7 @@
               </div>
             </tab>
             <tab name="View Requests" ref="requests">
-              <div class="alert alert-danger" role="alert" v-if="this.delError">You must be logged in to delete a request.</div>
+              <div class="alert alert-danger" role="alert" v-if="this.delError">You must be logged in as an admin to delete a request.</div>
               <div class="form-control card" v-show="allRequests.length === 0"><p>No current requests</p></div>
               <request v-for="(request,index) in allRequests" :key="index" :admin="admin" v-on:del-request="deleteRequest" :request="request"></request>
             </tab>
@@ -146,15 +146,21 @@ export default {
       })
       this.email = ""
       this.password = ""
-      this.currUser = login.currentUser.email
-      this.loggedIn = true
+      if(login.currentUser){
+        this.currUser = login.currentUser.email
+        this.loggedIn = true
+      }
     },
     logout () {
       login.signOut()
       this.loggedIn  = false
+      this.currUser = ""
     }
   },
   created () {
+    if(login.currentUser){
+      this.currUser = login.currentUser.email
+    }
     db.collection('supplies').orderBy("item").onSnapshot(querySnapshot => 
     {
       this.supplyList = [],
