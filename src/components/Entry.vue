@@ -1,12 +1,11 @@
 <template>
-    <form>
-        <div class="form-group row justify-content-md-center">
-            <label class="col-sm-3 col-form-label"> {{item}} </label>
-            <div class="col-sm-3">
+    <tr>
+            <td> {{item.iName}} </td>
+            <td> {{item.qty}}</td>
+            <td>
                 <input type="number" class="form-control" placeholder="0" v-model="count">
-            </div>
-        </div>
-    </form>
+            </td>
+    </tr>
 </template>
 
 <script>
@@ -20,9 +19,8 @@ export default {
   },
   props: {
     item: {
-      type: String,
-      required: true,
-      default: 'Error'
+      iName: '',
+      qty: ''
     }
   }
 }

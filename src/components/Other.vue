@@ -1,14 +1,11 @@
 <template>
-    <form @submit.prevent="onSubmit">
-        <div class="form-group row justify-content-md-center">
-            <div class="col-sm-3">
-                <input type="text" class="form-control" id="validationDefault01" placeholder="Other" v-model="item" required>
-            </div>
-            <div class="col-sm-3">
-                <input type="submit" class="form-control" value="Add To List">
-            </div>
-        </div>
-    </form>
+      <tr @submit.prevent="onSubmit">
+          <td> <input type="text" class="form-control" id="validationDefault01" placeholder="Other" v-model="item.iName" required> </td>
+          <td> <input type="text" class="form-control" id="validationDefault02" placeholder="Qty per box" v-model="item.qty" required></td>
+          <td>
+            <input @click="onSubmit" type="submit" class="form-control" value="Add To List">
+          </td>
+      </tr>
 </template>
 
 <script>
@@ -16,13 +13,17 @@ export default {
   name: 'Other',
   data () {
     return {
-      item: ''
+      item: {
+        iName: '',
+        qty: ''
+      }
     }
   },
   methods: {
     onSubmit () {
       this.$emit('item-added', this.item)
-      this.item = null
+      this.item.iName = ''
+      this.item.qty = ''
     }
   }
 }

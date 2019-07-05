@@ -10,6 +10,7 @@
                 <thead>
                     <tr>
                         <th scope="col">Supply</th>
+                        <th scope="col">Qty per box</th>
                         <th scope="col">Number Requested</th>
                         <th scope="col">Category</th>
                     </tr>
@@ -17,7 +18,8 @@
                 <tbody>
 
                     <tr v-for="(item,index) in request.supplies" :key="index" v-show="item.numRequested != 0">
-                        <td>{{ item.supplyInfo.item }}</td>
+                        <td>{{ item.supplyInfo.item.iName }}</td>
+                        <td>{{item.supplyInfo.item.qty}}</td>
                         <td>{{item.numRequested}}</td>
                         <td>{{item.supplyInfo.category}}</td>
                     </tr>

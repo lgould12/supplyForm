@@ -26,9 +26,19 @@
                 </div>
                 <div class="card-body">
                   <category ref="category" class="col-sm-3" @cat-changed="changeCat"></category>
-                  <entry v-for="(supply,index) in supplyList" :key="index" :item="supply.item" v-show="currCategory === supply.category" ref="supplies"></entry>
-                  <other @item-added="addItem"></other>
-
+                  <table class="table">
+                    <thead>
+                      <tr>
+                          <th scope="col">Supply</th>
+                          <th scope="col">Qty per box</th>
+                          <th scope="col">Number Needed</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <entry v-for="(supply,index) in supplyList" :key="index" :item="supply.item" v-show="currCategory === supply.category" ref="supplies"></entry>
+                      <other @item-added="addItem"></other>
+                    </tbody>
+                  </table>
                   <div class="row justify-content-md-center">
                     <button @click="recordForm" class="btn btn-primary" type="submit">Submit form</button>
                   </div>
@@ -40,6 +50,27 @@
               <div class="form-control card" v-show="allRequests.length === 0"><p>No current requests</p></div>
               <request v-for="(request,index) in allRequests" :key="index" :admin="admin" v-on:del-request="deleteRequest" :request="request"></request>
             </tab>
+<!--             <tab name="Edit Supplies">
+              <div class="card">
+                <div class="card-body">
+                  <category ref="category" class="col-sm-3" @cat-changed="changeCat"></category>
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Category</th>
+                        <th scope="col">Supply</th>
+                        <th scope="col">Qty per box</th>
+                        <th scope="col"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <supplyEdit @supply-updated="updateSupply" v-for="(supply,index) in supplyList" :key="index" :supply="supply" v-show="currCategory === supply.category" ref="supplies"></supplyEdit>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </tab>
+ -->            
           </tabs>
         </main>
       </div>
@@ -58,6 +89,7 @@ import axios from 'axios'
 import Category from '../components/Category.vue'
 // import Login from '../components/Login.vue'
 import uuid from 'uuid'
+import SupplyEdit from '../components/SupplyEdit.vue'
 import {db} from '../firebase'
 import {login} from '../firebase'
 
@@ -97,10 +129,17 @@ export default {
     Tabs,
     Request,
     Locate,
-    Category
+    Category,
+    SupplyEdit
   },
 
   methods: {
+    updateSupply(supply){
+      db.collection('supplies').doc(supply.item.iName).update({
+          category: supply.category,
+          item: supply.item
+      })
+    },
     addItem (item) {
       db.collection('supplies').add({
           item: item,
@@ -146,20 +185,24 @@ export default {
       })
       this.email = ""
       this.password = ""
-      if(login.currentUser){
-        this.currUser = login.currentUser.email
-        this.loggedIn = true
-      }
+      this.userUpdate()
     },
     logout () {
       login.signOut()
       this.loggedIn  = false
       this.currUser = ""
+    },
+    userUpdate() {
+      if(login.currentUser){
+        this.currUser = login.currentUser.email
+        this.loggedIn = true
+      }
     }
   },
   created () {
     if(login.currentUser){
       this.currUser = login.currentUser.email
+      this.loggedIn = true
     }
     db.collection('supplies').orderBy("item").onSnapshot(querySnapshot => 
     {
