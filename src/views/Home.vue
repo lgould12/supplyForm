@@ -50,7 +50,7 @@
               <div class="form-control card" v-show="allRequests.length === 0"><p>No current requests</p></div>
               <request v-for="(request,index) in allRequests" :key="index" :admin="admin" v-on:del-request="deleteRequest" :request="request"></request>
             </tab>
-<!--             <tab name="Edit Supplies">
+             <tab name="Edit Supplies">
               <div class="card">
                 <div class="card-body">
                   <category ref="category" class="col-sm-3" @cat-changed="changeCat"></category>
@@ -70,7 +70,7 @@
                 </div>
               </div>
             </tab>
- -->            
+          
           </tabs>
         </main>
       </div>
@@ -135,9 +135,9 @@ export default {
 
   methods: {
     updateSupply(supply){
-      db.collection('supplies').doc(supply.item.iName).update({
-          category: supply.category,
-          item: supply.item
+      db.collection('supplies').doc(supply.id).update({
+        item: supply.item,
+        category: supply.category
       })
     },
     addItem (item) {
