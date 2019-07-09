@@ -1,33 +1,36 @@
 <template>
-    <div class="col-md-auto">
-        <div class="form-group row justify-content-md-center">
-            <div class="col-sm-auto">
-                <input class="form-control" type="password" name="password" v-model="passwordInput" placeholder="Password" >
-            </div>
-            <div class="col-sm-auto">
-                <button class="form-control" type="button" v-on:click="login">Login</button>
-            </div>
-        </div>
+    <div class="card">
+        <input class="form-control" type="text" v-model="email" placeholder="Email" style="margin: 3px">
+        <input class="form-control" type="password" v-model="password" placeholder="Password" style="margin: 3px">
+        <button @click="authenticate" class="btn btn-dark" style="margin: 3px">Log In</button>
+        <button @click="logout" class="btn btn-dark" style="margin: 3px">Log Out</button>
     </div>
 </template>
 
 <script>
+import {login} from '../firebase.js'
+
 export default {
   name: 'Login',
+
   data () {
     return {
-      passwordInput: ""
+      password: '',
+      email: ''
     }
-  },
-  props: {
-    password: ""
   },
   methods: {
-    login () {
-      if (this.passwordInput == this.password) {
-        this.$emit('authenticated', true)
-                }
-    }
+    authenticate () {
+      login.signInWithEmailAndPassword(this.email, this.password).catch(function(error) {
+        console.log(error.code)
+        alert(error.message)
+      })
+      this.email = ""
+      this.password = ""
+    },
+    logout () {
+      login.signOut()
+    },
   }
 }
 </script>

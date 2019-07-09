@@ -1,9 +1,9 @@
 <template>
     <div class="card">
         <div class="card-header form-group row justify-content-end">
-                <div class="col-sm col-form-label"> {{ request.locale }} </div>
-                <div class="col-sm-auto col-form-label"> {{ request.date }} </div>
-                <button type="button" class="btn btn-danger col-sm-2 col-form-label" @click="$emit('del-request',request.id)">Delete Request</button>
+            <div class="col-sm col-form-label"> {{ request.locale }} </div>
+            <div class="col-sm-auto col-form-label"> {{ request.date }} </div>
+            <button type="button" class="btn btn-danger col-sm-2 col-form-label" @click="$emit('del-request',request.id)">Delete Request</button>
         </div>
         <div class="card-body">
             <table class="table">
@@ -16,7 +16,6 @@
                     </tr>
                 </thead>
                 <tbody>
-
                     <tr v-for="(item,index) in request.supplies" :key="index" v-show="item.numRequested != 0">
                         <td>{{ item.supplyInfo.item.iName }}</td>
                         <td>{{item.supplyInfo.item.qty}}</td>
