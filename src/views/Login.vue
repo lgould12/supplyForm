@@ -29,6 +29,7 @@ export default {
       })
       this.email = ""
       this.password = ""
+      this.$router.push('/')
     },
     logout () {
       login.signOut()

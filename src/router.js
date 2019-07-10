@@ -5,16 +5,20 @@ import Login from './views/Login.vue'
 import ReqView from './views/ReqView.vue'
 import Editor from './views/Editor.vue'
 import OrderForm from './views/OrderForm'
+import {login} from './firebase'
 
 
 Vue.use(Router)
 
-export default new Router({
+let router = new Router({
   routes: [
     {
       path: '/',
       name: 'home',
-      component: Home
+      component: Home,
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/about',
@@ -27,22 +31,62 @@ export default new Router({
     {
       path: '/login',
       name: 'login',
-      component: Login
+      component: Login,
+      meta: {
+        requiresGuest: true
+      }
     },
     {
       path: '/editor',
       name: 'editor',
-      component: Editor
+      component: Editor,
+      meta: {
+        requiresAuth: true
+      }
+
     },
     {
       path: '/reqView',
       name: 'reqView',
-      component: ReqView
+      component: ReqView,
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/orderForm',
       name: 'orderForm',
-      component: OrderForm
+      component: OrderForm,
+      meta: {
+        requiresAuth: true
+      }
     }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  if(to.matched.some(record =>record.meta.requiresAuth)){
+    if(!login.currentUser){
+      next({
+        path: '/login',
+        query: {
+          redirect: to.fullPath
+        }
+      })
+    } else{
+      next()
+    }
+  } else if(to.matched.some(record=>record.meta.requiresGuest)){
+    if(login.currentUser){
+      next({
+        path: '/',
+        query: {
+          redirect: to.fullPath
+        }
+      })
+    }
+    next()
+  }
+})
+
+export default router;
