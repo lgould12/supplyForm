@@ -1,5 +1,11 @@
 # routerform
 
+## About
+```
+This is a working proof of concept supply management site made for The Rush Market.
+Site was later implemented into the internal company website with additional features.
+```
+
 ## Project setup
 ```
 npm install
